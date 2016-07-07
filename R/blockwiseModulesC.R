@@ -802,6 +802,8 @@ blockwiseModules = function(
   if (seedSaved) .Random.seed <<- savedSeed;
 
   if (!saveTOMs) TOMFiles = NULL;
+  
+  collectGarbageFull()
 
   list(colors = mergedAllColors, 
        unmergedColors = colors, 

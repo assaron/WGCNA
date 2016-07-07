@@ -290,7 +290,9 @@ removeGreyME = function(MEs, greyMEName = paste(moduleColor.getMEprefix(), "grey
 # ===================================================
 # This function collects garbage
 
-collectGarbage=function(){while (gc()[2,4] != gc()[2,4] | gc()[1,4] != gc()[1,4]){}}
+#collectGarbage=function(){while (gc()[2,4] != gc()[2,4] | gc()[1,4] != gc()[1,4]){}}
+collectGarbage=function(){}
+collectGarbageFull=function(){while (gc()[2,4] != gc()[2,4] | gc()[1,4] != gc()[1,4]){}}
 
 #--------------------------------------------------------------------------------------
 #
@@ -1541,6 +1543,7 @@ pickSoftThreshold = function (data, dataIsExpr = TRUE, RsquaredCut = 0.85,
       # Move to the next block of genes.
       startG = endG + 1
       if (verbose == 1) pind = updateProgInd(endG/nGenes, pind)
+      gc()
     }
     if (verbose == 1) printFlush("");
 
@@ -1569,6 +1572,7 @@ pickSoftThreshold = function (data, dataIsExpr = TRUE, RsquaredCut = 0.85,
     indcut = NA
     indcut = if (sum(ind1) > 0) min(c(1:length(ind1))[ind1]) else indcut;
     powerEstimate = powerVector[indcut][[1]]
+    collectGarbageFull()
     list(powerEstimate = powerEstimate, fitIndices = data.frame(datout))
 }
 
