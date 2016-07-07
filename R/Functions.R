@@ -1433,6 +1433,7 @@ pickSoftThreshold = function (data, dataIsExpr = TRUE, RsquaredCut = 0.85,
     blockSize = NULL, corFnc = cor, corOptions = list(use = 'p'), 
     networkType = "unsigned", moreNetworkConcepts=FALSE, verbose = 0, indent = 0)
 {
+    powerVector = sort(powerVector)
     intType = charmatch(networkType, .networkTypes)
     if (is.na(intType)) 
         stop(paste("Unrecognized 'networkType'. Recognized values are", 
@@ -1523,10 +1524,19 @@ pickSoftThreshold = function (data, dataIsExpr = TRUE, RsquaredCut = 0.85,
           corx = data[, useGenes];
         }
         datk.local = matrix(NA, nGenes1, nPowers);
+        
+        corxPrev = matrix(1, nrow=nrow(corx), ncol=ncol(corx))
+        powerVector1 <- c(0, head(powerVector, -1))
+        powerSteps <- powerVector - powerVector1
+        uniquePowerSteps <- unique(powerSteps)
+        corxPowers <- lapply(uniquePowerSteps, function(p) corx^p)
+        names(corxPowers) <- uniquePowerSteps
         for (j in 1:nPowers) {
-            datk.local[, j] = colSums(corx^powerVector[j], na.rm = TRUE) - 1;
+            corxCur <- corxPrev * corxPowers[[as.character(powerSteps[j])]]
+            datk.local[, j] = colSums(corxCur, na.rm = TRUE) - 1
+            corxPrev <- corxCur
         }
-        datk.local;
+        datk.local
       } # End of %dopar% evaluation
       # Move to the next block of genes.
       startG = endG + 1
